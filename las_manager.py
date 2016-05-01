@@ -1,4 +1,4 @@
-import json as js, spatial, numpy as np
+import json as js, spatial, os, numpy as np
 from laspy.file import File
 
 #start_time = time.time()
@@ -6,7 +6,6 @@ from laspy.file import File
 
 
 def get_header(filename):
-    filename = r"D:\Smieci\Wewnetrzny\2015_07_18_transect_point_cloud_UTM.las"
     inFile = File(filename, mode="r")
     header = spatial.las_header(inFile.header)
     head_obj = js.dumps(header)
@@ -22,13 +21,20 @@ def get_points_by_geom(filename, poly):
             [661099.026, 5953525.168],
             [661105.753, 5953550.459]
     ], "spatialReference": {"wkid": 2197}}
-    filename = r"D:\Smieci\Wewnetrzny\2015_07_18_transect_point_cloud_UTM.las"
     inFile = File(filename, mode="r")
     results = spatial.las_within(inFile, poly["rings"], ["x", "y", "z"])
     json = js.dumps(results)
     inFile.close()
     return json
 
+
+def get_points_by_geom_mfn(filenames, poly):
+    points = []
+    for fn in filenames:
+        inFile = File(fn, mode="r")
+        results = spatial.las_within(inFile, poly["rings"], ["x", "y", "z"], True)
+        points += results
+    return js.dumps({"params": ["x", "y", "z"], "points": points})
 
 def get_stats_by_geom(filename, poly):
     poly = {"rings": [
@@ -38,7 +44,6 @@ def get_stats_by_geom(filename, poly):
             [661099.026, 5953525.168],
             [661105.753, 5953550.459]
     ], "spatialReference": {"wkid": 2197}}
-    filename = r"D:\Smieci\Wewnetrzny\2015_07_18_transect_point_cloud_UTM.las"
     inFile = File(filename, mode="r")
     results = spatial.las_within(inFile, poly["rings"], ["z"])
     inFile.close()

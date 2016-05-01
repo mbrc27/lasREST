@@ -4,7 +4,16 @@ import matplotlib.path as mpl_path
 
 # Uwaga nie wspiera roznych ukladow odniesienia
 
-def las_within(points_file, polygon, parameters):
+def validate_geom(geometry):
+    try:
+        sr = geometry["spatialReference"]
+        rings = geometry["rings"]
+        return True
+    except:
+        return False
+
+
+def las_within(points_file, polygon, parameters, point_export = False):
     bb_path = mpl_path.Path(np.array(polygon))
     coords = np.vstack((points_file.x, points_file.y)).transpose()
     point_tester = bb_path.contains_points(coords)
@@ -14,8 +23,11 @@ def las_within(points_file, polygon, parameters):
 
     return_arr = np.vstack(tuple(params_list)).transpose()
 
-    return_obj = {"params": parameters, "points": return_arr.tolist()}
-    return return_obj
+    if point_export == True:
+        return return_arr.tolist()
+    else:
+        return_obj = {"params": parameters, "points": return_arr.tolist()}
+        return return_obj
 
 
 def las_statistics(z_array):
