@@ -4,6 +4,7 @@ import las_manager as lm
 class Header:
     exposed = True
 
+    @cherrypy.tools.accept(media='text/plain')
     def GET(self, filename = None):
         if filename == None:
             cherrypy.response.status = 400
@@ -15,6 +16,7 @@ class Header:
 class Points:
     exposed = True
 
+    @cherrypy.tools.accept(media='text/plain')
     def GET(self, filename = None):
         if filename == None:
             cherrypy.response.headers["Status"] = "400"
