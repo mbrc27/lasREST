@@ -14,13 +14,6 @@ def get_header(filename):
 
 
 def get_points_by_geom(filename, poly):
-    poly = {"rings": [
-            [661105.753, 5953550.459],
-            [661142.424, 5953541.093],
-            [661129.406, 5953513.153],
-            [661099.026, 5953525.168],
-            [661105.753, 5953550.459]
-    ], "spatialReference": {"wkid": 2197}}
     inFile = File(filename, mode="r")
     results = spatial.las_within(inFile, poly["rings"], ["x", "y", "z"])
     json = js.dumps(results)
@@ -36,18 +29,20 @@ def get_points_by_geom_mfn(filenames, poly):
         points += results
     return js.dumps({"params": ["x", "y", "z"], "points": points})
 
+
 def get_stats_by_geom(filename, poly):
-    poly = {"rings": [
-            [661105.753, 5953550.459],
-            [661142.424, 5953541.093],
-            [661129.406, 5953513.153],
-            [661099.026, 5953525.168],
-            [661105.753, 5953550.459]
-    ], "spatialReference": {"wkid": 2197}}
     inFile = File(filename, mode="r")
     results = spatial.las_within(inFile, poly["rings"], ["z"])
     inFile.close()
     stats = spatial.las_statistics(results["points"])
-    return stats
+    json = js.dumps(stats)
+    return json
 
 
+def get_stats_by_geom_mfn(filenames, poly):
+    points = []
+    for fn in filenames:
+        inFile = File(fn, mode="r")
+        results = spatial.get_stats_by_geom(inFile, poly["rings"], ["z"], True)
+        points += results
+    return js.dumps({"params": ["z"], "points": points})

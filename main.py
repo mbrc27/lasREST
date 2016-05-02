@@ -3,6 +3,7 @@ from routes import Header, Points, Statistics
 
 cherrypy.config.update({'server.socket_port': 3000})
 
+
 class App(object):
     @cherrypy.expose
     def index(self):
@@ -10,8 +11,8 @@ class App(object):
 
 
 if __name__ == '__main__':
-
-     app_conf = {
+    file_dir = r"D:\Dane"
+    app_conf = {
          '/': {
              'tools.sessions.on': True,
              'tools.staticdir.root': os.path.abspath(os.getcwd())
@@ -20,34 +21,34 @@ if __name__ == '__main__':
              'tools.staticdir.on': True,
              'tools.staticdir.dir': './public'
          }
-     }
+    }
 
-     cherrypy.tree.mount(App(), '/', app_conf)
+    cherrypy.tree.mount(App(), '/', app_conf)
 
-     cherrypy.tree.mount(Header(), '/api/header', {
+    cherrypy.tree.mount(Header(file_dir), '/api/header', {
          '/': {
              'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
              'tools.response_headers.on': True,
              'tools.response_headers.headers': [('Content-Type', 'text/plain')],
          }
-     })
-     cherrypy.tree.mount(Points(), '/api/points', {
+    })
+    cherrypy.tree.mount(Points(file_dir), '/api/points', {
          '/': {
              'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
              'tools.response_headers.on': True,
              'tools.response_headers.headers': [('Content-Type', 'text/plain')],
          }
-     })
-     cherrypy.tree.mount(Statistics(), '/api/stats', {
+    })
+    cherrypy.tree.mount(Statistics(file_dir), '/api/stats', {
          '/': {
              'request.dispatch': cherrypy.dispatch.MethodDispatcher(),
              'tools.response_headers.on': True,
              'tools.response_headers.headers': [('Content-Type', 'text/plain')],
          }
-     })
+    })
 
-     cherrypy.engine.start()
-     cherrypy.engine.block()
+    cherrypy.engine.start()
+    cherrypy.engine.block()
 
 
 
